@@ -1,8 +1,16 @@
+import { Instagram, Linkedin, Youtube, Mail, Phone, MapPin } from "lucide-react";
+
 const Footer = () => {
   const scrollTo = (href: string) => {
     const el = document.querySelector(href);
     el?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const socialLinks = [
+    { icon: Instagram, href: "https://instagram.com/xfiscal", label: "Instagram" },
+    { icon: Linkedin, href: "https://linkedin.com/company/xfiscal", label: "LinkedIn" },
+    { icon: Youtube, href: "https://youtube.com/@xfiscal", label: "YouTube" },
+  ];
 
   return (
     <footer id="contato" className="border-t border-border bg-card py-16">
@@ -16,28 +24,55 @@ const Footer = () => {
               </div>
               <span className="text-xl font-bold text-foreground">xFiscal</span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               Sistema de emissão de documentos fiscais para contadores e escritórios contábeis.
             </p>
+            <div className="flex gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                >
+                  <social.icon size={16} />
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Links */}
+          {/* Produto */}
           <div>
             <h4 className="font-semibold text-foreground mb-4 text-sm">Produto</h4>
             <ul className="space-y-2">
-              {["Funcionalidades", "Planos", "FAQ"].map((item) => (
-                <li key={item}>
-                  <button
-                    onClick={() => scrollTo(`#${item.toLowerCase()}`)}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item}
-                  </button>
+              {[
+                { label: "Funcionalidades", href: "#funcionalidades" },
+                { label: "Planos", href: "#planos" },
+                { label: "Depoimentos", href: "#depoimentos" },
+                { label: "FAQ", href: "#faq" },
+                { label: "Blog", href: "/blog" },
+              ].map((item) => (
+                <li key={item.label}>
+                  {item.href.startsWith("#") ? (
+                    <button
+                      onClick={() => scrollTo(item.href)}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <a href={item.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {item.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
 
+          {/* Legal */}
           <div>
             <h4 className="font-semibold text-foreground mb-4 text-sm">Legal</h4>
             <ul className="space-y-2">
@@ -51,19 +86,32 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Contato */}
           <div>
             <h4 className="font-semibold text-foreground mb-4 text-sm">Contato</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>suporte@xfiscal.com.br</li>
-              <li>(11) 99999-9999</li>
-              <li>São Paulo, SP</li>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <Mail size={14} className="text-primary shrink-0" />
+                <a href="mailto:suporte@xfiscal.com.br" className="hover:text-foreground transition-colors">suporte@xfiscal.com.br</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone size={14} className="text-primary shrink-0" />
+                <span>(11) 99999-9999</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <MapPin size={14} className="text-primary shrink-0" />
+                <span>São Paulo, SP</span>
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-border mt-12 pt-8 text-center">
+        <div className="border-t border-border mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} xFiscal. Todos os direitos reservados.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Feito com 💙 para contadores brasileiros
           </p>
         </div>
       </div>
