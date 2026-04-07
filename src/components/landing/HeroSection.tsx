@@ -80,7 +80,7 @@ const HeroSection = () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
                   { label: "NF-e Entrada", value: "128", color: "bg-primary/10 text-primary" },
-                  { label: "NF-e Saída", value: "342", color: "bg-accent/10 text-accent" },
+                  { label: "NF-e Saída", value: "342", color: "bg-accent/10 text-foreground" },
                   { label: "NFC-e", value: "89", color: "bg-orange-100 text-orange-600" },
                   { label: "Devoluções", value: "12", color: "bg-destructive/10 text-destructive" },
                 ].map((item) => (
