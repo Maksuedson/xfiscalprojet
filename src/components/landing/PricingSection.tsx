@@ -1,18 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const plans = [
   {
     name: "Starter",
     price: "97",
     description: "Ideal para contadores com até 5 empresas",
-    features: [
-      "Até 5 empresas",
-      "NF-e e NFC-e ilimitadas",
-      "Cobrança PIX básica",
-      "Relatórios essenciais",
-      "Suporte por email",
-    ],
+    features: ["Até 5 empresas", "NF-e e NFC-e ilimitadas", "Cobrança PIX básica", "Relatórios essenciais", "Suporte por email"],
     variant: "heroOutline" as const,
     popular: false,
   },
@@ -20,14 +15,7 @@ const plans = [
     name: "Profissional",
     price: "197",
     description: "Para escritórios em crescimento",
-    features: [
-      "Até 30 empresas",
-      "NF-e e NFC-e ilimitadas",
-      "Cobrança PIX automática",
-      "Relatórios avançados com gráficos",
-      "Alertas por email e WhatsApp",
-      "Suporte prioritário",
-    ],
+    features: ["Até 30 empresas", "NF-e e NFC-e ilimitadas", "Cobrança PIX automática", "Relatórios avançados com gráficos", "Alertas por email e WhatsApp", "Suporte prioritário"],
     variant: "hero" as const,
     popular: true,
   },
@@ -35,25 +23,19 @@ const plans = [
     name: "Enterprise",
     price: "397",
     description: "Para grandes escritórios contábeis",
-    features: [
-      "Empresas ilimitadas",
-      "NF-e e NFC-e ilimitadas",
-      "Cobrança PIX + boleto",
-      "Relatórios com exportação PDF/Excel",
-      "API de integração",
-      "White-label",
-      "Suporte dedicado",
-    ],
+    features: ["Empresas ilimitadas", "NF-e e NFC-e ilimitadas", "Cobrança PIX + boleto", "Relatórios com exportação PDF/Excel", "API de integração", "White-label", "Suporte dedicado"],
     variant: "heroOutline" as const,
     popular: false,
   },
 ];
 
 const PricingSection = () => {
+  const { ref, isVisible } = useScrollReveal();
+
   return (
     <section id="planos" className="py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+      <div className="container mx-auto px-4" ref={ref}>
+        <div className={`text-center max-w-2xl mx-auto mb-16 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <span className="text-sm font-semibold text-primary uppercase tracking-wider">Planos</span>
           <h2 className="text-3xl sm:text-4xl font-bold mt-3 mb-4 text-foreground">
             Escolha o plano ideal para seu escritório
@@ -64,14 +46,15 @@ const PricingSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
+          {plans.map((plan, i) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl p-8 bg-card border transition-all duration-300 hover:-translate-y-1 ${
+              className={`relative rounded-2xl p-8 bg-card border transition-all duration-500 hover:-translate-y-1 ${
                 plan.popular
                   ? "border-primary shadow-card-hover scale-[1.02]"
                   : "border-border shadow-card hover:shadow-card-hover"
-              }`}
+              } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: `${150 + i * 120}ms` }}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
