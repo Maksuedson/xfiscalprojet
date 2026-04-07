@@ -81,7 +81,7 @@ const HeroSection = () => {
                 {[
                   { label: "NF-e Entrada", value: "128", color: "bg-primary/10 text-primary" },
                   { label: "NF-e Saída", value: "342", color: "bg-accent/10 text-foreground" },
-                  { label: "NFC-e", value: "89", color: "bg-orange-100 text-orange-600" },
+                  { label: "NFC-e", value: "89", color: "bg-secondary text-secondary-foreground" },
                   { label: "Devoluções", value: "12", color: "bg-destructive/10 text-destructive" },
                 ].map((item) => (
                   <div key={item.label} className={`rounded-xl p-4 ${item.color}`}>
