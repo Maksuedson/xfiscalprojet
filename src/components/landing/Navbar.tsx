@@ -51,6 +51,9 @@ const Navbar = () => {
               </Link>
             )
           )}
+          <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Entrar
+          </Link>
           <Button variant="hero" size="sm" onClick={() => scrollTo("#planos")}>
             Começar agora
           </Button>
