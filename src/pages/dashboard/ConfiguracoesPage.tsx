@@ -1,12 +1,34 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
-import { Settings, Upload, Shield, Bell } from "lucide-react";
+import { Settings, Upload, Shield, Bell, Lock, Save } from "lucide-react";
 import { toast } from "sonner";
 
 const ConfiguracoesPage = () => {
   const { user } = useAuth();
+  const [perfil, setPerfil] = useState({
+    nome: user?.nome || "",
+    usuario: user?.usuario || "",
+    email: "",
+    telefone: "",
+  });
+  const [senhas, setSenhas] = useState({ atual: "", nova: "", confirmar: "" });
+  const [notifs, setNotifs] = useState({ rejeitada: true, pagamento: true, certificado: true });
+
+  const handleSalvarPerfil = () => {
+    if (!perfil.nome.trim()) { toast.error("O nome é obrigatório."); return; }
+    toast.success("Dados do perfil atualizados com sucesso!");
+  };
+
+  const handleAlterarSenha = () => {
+    if (!senhas.atual || !senhas.nova) { toast.error("Preencha todos os campos de senha."); return; }
+    if (senhas.nova !== senhas.confirmar) { toast.error("As senhas não coincidem."); return; }
+    if (senhas.nova.length < 6) { toast.error("A senha deve ter pelo menos 6 caracteres."); return; }
+    toast.success("Senha alterada com sucesso!");
+    setSenhas({ atual: "", nova: "", confirmar: "" });
+  };
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -19,12 +41,12 @@ const ConfiguracoesPage = () => {
           <h2 className="text-lg font-semibold text-foreground">Dados da Conta</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2"><Label>Nome</Label><Input defaultValue={user?.nome} /></div>
-          <div className="space-y-2"><Label>Usuário</Label><Input defaultValue={user?.usuario} /></div>
-          <div className="space-y-2"><Label>Email</Label><Input type="email" placeholder="email@exemplo.com" /></div>
-          <div className="space-y-2"><Label>Telefone</Label><Input placeholder="(11) 99999-0000" /></div>
+          <div className="space-y-2"><Label>Nome</Label><Input value={perfil.nome} onChange={(e) => setPerfil({ ...perfil, nome: e.target.value })} /></div>
+          <div className="space-y-2"><Label>Usuário</Label><Input value={perfil.usuario} onChange={(e) => setPerfil({ ...perfil, usuario: e.target.value })} /></div>
+          <div className="space-y-2"><Label>Email</Label><Input type="email" value={perfil.email} onChange={(e) => setPerfil({ ...perfil, email: e.target.value })} placeholder="email@exemplo.com" /></div>
+          <div className="space-y-2"><Label>Telefone</Label><Input value={perfil.telefone} onChange={(e) => setPerfil({ ...perfil, telefone: e.target.value })} placeholder="(11) 99999-0000" /></div>
         </div>
-        <Button variant="hero" onClick={() => toast.success("Dados atualizados!")}>Salvar Alterações</Button>
+        <Button variant="hero" onClick={handleSalvarPerfil}><Save size={16} className="mr-2" />Salvar Alterações</Button>
       </div>
 
       {/* Certificado Digital */}
@@ -46,7 +68,7 @@ const ConfiguracoesPage = () => {
             <div className="space-y-2"><Label>Arquivo do Certificado (.pfx)</Label><Input type="file" accept=".pfx,.p12" /></div>
             <div className="space-y-2"><Label>Senha do Certificado</Label><Input type="password" placeholder="••••••••" /></div>
           </div>
-          <Button variant="outline" onClick={() => toast.success("Certificado atualizado!")}>Atualizar Certificado</Button>
+          <Button variant="outline" onClick={() => toast.success("Certificado atualizado com sucesso!")}><Upload size={16} className="mr-2" />Atualizar Certificado</Button>
         </div>
       )}
 
@@ -58,27 +80,31 @@ const ConfiguracoesPage = () => {
         </div>
         <div className="space-y-3">
           {[
-            { label: "Nota fiscal rejeitada", desc: "Receba alerta quando uma nota for rejeitada pela SEFAZ" },
-            { label: "Pagamento confirmado", desc: "Notificação quando um pagamento PIX for confirmado" },
-            { label: "Certificado vencendo", desc: "Alerta 30 dias antes do vencimento do certificado" },
+            { key: "rejeitada" as const, label: "Nota fiscal rejeitada", desc: "Receba alerta quando uma nota for rejeitada pela SEFAZ" },
+            { key: "pagamento" as const, label: "Pagamento confirmado", desc: "Notificação quando um pagamento PIX for confirmado" },
+            { key: "certificado" as const, label: "Certificado vencendo", desc: "Alerta 30 dias antes do vencimento do certificado" },
           ].map((n) => (
-            <label key={n.label} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/30 cursor-pointer">
-              <input type="checkbox" defaultChecked className="mt-1 rounded border-border" />
+            <label key={n.key} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/30 cursor-pointer">
+              <input type="checkbox" checked={notifs[n.key]} onChange={(e) => setNotifs({ ...notifs, [n.key]: e.target.checked })} className="mt-1 rounded border-border" />
               <div><p className="text-sm font-medium text-foreground">{n.label}</p><p className="text-xs text-muted-foreground">{n.desc}</p></div>
             </label>
           ))}
         </div>
-        <Button variant="outline" onClick={() => toast.success("Preferências salvas!")}>Salvar Preferências</Button>
+        <Button variant="outline" onClick={() => toast.success("Preferências de notificação salvas!")}><Save size={16} className="mr-2" />Salvar Preferências</Button>
       </div>
 
       {/* Segurança */}
       <div className="bg-card border border-border rounded-xl p-6 shadow-card space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Alterar Senha</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2"><Label>Senha Atual</Label><Input type="password" /></div>
-          <div className="space-y-2"><Label>Nova Senha</Label><Input type="password" /></div>
+        <div className="flex items-center gap-3 mb-2">
+          <Lock size={20} className="text-primary" />
+          <h2 className="text-lg font-semibold text-foreground">Alterar Senha</h2>
         </div>
-        <Button variant="outline" onClick={() => toast.success("Senha alterada!")}>Alterar Senha</Button>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="space-y-2"><Label>Senha Atual</Label><Input type="password" value={senhas.atual} onChange={(e) => setSenhas({ ...senhas, atual: e.target.value })} /></div>
+          <div className="space-y-2"><Label>Nova Senha</Label><Input type="password" value={senhas.nova} onChange={(e) => setSenhas({ ...senhas, nova: e.target.value })} /></div>
+          <div className="space-y-2"><Label>Confirmar Nova Senha</Label><Input type="password" value={senhas.confirmar} onChange={(e) => setSenhas({ ...senhas, confirmar: e.target.value })} /></div>
+        </div>
+        <Button variant="outline" onClick={handleAlterarSenha}><Lock size={16} className="mr-2" />Alterar Senha</Button>
       </div>
     </div>
   );
