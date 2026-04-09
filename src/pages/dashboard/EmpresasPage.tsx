@@ -2,8 +2,8 @@ import { useState } from "react";
 import DataTable from "@/components/dashboard/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Building2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, Search, Building2, Pencil, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
@@ -19,53 +19,69 @@ const initialEmpresas = [
 const EmpresasPage = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [items, setItems] = useState(initialEmpresas);
+  const [editItem, setEditItem] = useState<typeof initialEmpresas[0] | null>(null);
+  const [form, setForm] = useState({ xFant: "", cnpj: "", ie: "", uf: "", cidade: "" });
 
-  const filtered = initialEmpresas.filter((e) =>
-    e.xFant.toLowerCase().includes(search.toLowerCase()) || e.cnpj.includes(search)
-  );
+  const filtered = items.filter((e) => e.xFant.toLowerCase().includes(search.toLowerCase()) || e.cnpj.includes(search));
+
+  const resetForm = () => setForm({ xFant: "", cnpj: "", ie: "", uf: "", cidade: "" });
+
+  const handleSave = () => {
+    if (!form.xFant.trim() || !form.cnpj.trim()) { toast.error("Preencha nome fantasia e CNPJ."); return; }
+    if (editItem) {
+      setItems((prev) => prev.map((e) => e.id === editItem.id ? { ...e, ...form } : e));
+      toast.success("Empresa atualizada!");
+    } else {
+      setItems((prev) => [...prev, { id: Date.now(), ...form, status: "Ativo", notas: 0 }]);
+      toast.success("Empresa cadastrada!");
+    }
+    setOpen(false); setEditItem(null); resetForm();
+  };
+
+  const handleEdit = (item: typeof initialEmpresas[0]) => {
+    setEditItem(item); setForm({ xFant: item.xFant, cnpj: item.cnpj, ie: item.ie, uf: item.uf, cidade: item.cidade }); setOpen(true);
+  };
+
+  const handleDelete = (id: number) => { setItems((prev) => prev.filter((e) => e.id !== id)); toast.success("Empresa excluída!"); };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Empresas</h1>
-          <p className="text-muted-foreground">Gerencie as empresas cadastradas</p>
-        </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="hero"><Plus size={16} className="mr-2" />Nova Empresa</Button>
-          </DialogTrigger>
+        <div><h1 className="text-2xl font-bold text-foreground">Empresas</h1><p className="text-muted-foreground">Gerencie as empresas cadastradas</p></div>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditItem(null); resetForm(); } }}>
+          <DialogTrigger asChild><Button variant="hero"><Plus size={16} className="mr-2" />Nova Empresa</Button></DialogTrigger>
           <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>Cadastrar Empresa</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>{editItem ? "Editar Empresa" : "Cadastrar Empresa"}</DialogTitle>
+              <DialogDescription>Preencha os dados da empresa.</DialogDescription>
+            </DialogHeader>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-              <div className="sm:col-span-2 space-y-2"><Label>Nome Fantasia</Label><Input placeholder="Ex: Minha Empresa LTDA" /></div>
-              <div className="space-y-2"><Label>CNPJ</Label><Input placeholder="00.000.000/0001-00" /></div>
-              <div className="space-y-2"><Label>Inscrição Estadual</Label><Input placeholder="000000000" /></div>
-              <div className="space-y-2"><Label>UF</Label><Input placeholder="SP" /></div>
-              <div className="space-y-2"><Label>Cidade</Label><Input placeholder="São Paulo" /></div>
+              <div className="sm:col-span-2 space-y-2"><Label>Nome Fantasia</Label><Input value={form.xFant} onChange={(e) => setForm({ ...form, xFant: e.target.value })} placeholder="Ex: Minha Empresa LTDA" /></div>
+              <div className="space-y-2"><Label>CNPJ</Label><Input value={form.cnpj} onChange={(e) => setForm({ ...form, cnpj: e.target.value })} placeholder="00.000.000/0001-00" /></div>
+              <div className="space-y-2"><Label>Inscrição Estadual</Label><Input value={form.ie} onChange={(e) => setForm({ ...form, ie: e.target.value })} placeholder="000000000" /></div>
+              <div className="space-y-2"><Label>UF</Label><Input value={form.uf} onChange={(e) => setForm({ ...form, uf: e.target.value })} placeholder="SP" maxLength={2} /></div>
+              <div className="space-y-2"><Label>Cidade</Label><Input value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} placeholder="São Paulo" /></div>
             </div>
             <div className="flex justify-end gap-3 mt-4">
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-              <Button variant="hero" onClick={() => { toast.success("Empresa cadastrada!"); setOpen(false); }}>Salvar</Button>
+              <Button variant="outline" onClick={() => { setOpen(false); setEditItem(null); resetForm(); }}>Cancelar</Button>
+              <Button variant="hero" onClick={handleSave}>{editItem ? "Atualizar" : "Salvar"}</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
-
-      <div className="relative max-w-sm">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Buscar por nome ou CNPJ..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
-      </div>
-
+      <div className="relative max-w-sm"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" /><Input placeholder="Buscar por nome ou CNPJ..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" /></div>
       <DataTable
         columns={[
-          { key: "xFant", header: "Nome Fantasia", render: (r) => <div className="flex items-center gap-2"><Building2 size={16} className="text-primary" /><span className="font-medium">{r.xFant}</span></div> },
-          { key: "cnpj", header: "CNPJ" },
-          { key: "ie", header: "IE" },
-          { key: "uf", header: "UF" },
-          { key: "cidade", header: "Cidade" },
-          { key: "notas", header: "Notas" },
-          { key: "status", header: "Status", render: (r) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "Ativo" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
+          { key: "xFant", header: "Nome Fantasia", render: (r: any) => <div className="flex items-center gap-2"><Building2 size={16} className="text-primary" /><span className="font-medium">{r.xFant}</span></div> },
+          { key: "cnpj", header: "CNPJ" }, { key: "ie", header: "IE" }, { key: "uf", header: "UF" }, { key: "cidade", header: "Cidade" }, { key: "notas", header: "Notas" },
+          { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "Ativo" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
+          { key: "acoes", header: "Ações", render: (r: any) => (
+            <div className="flex gap-1">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(r)}><Pencil size={14} /></Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive" onClick={() => handleDelete(r.id)}><Trash2 size={14} /></Button>
+            </div>
+          )},
         ]}
         data={filtered}
       />
