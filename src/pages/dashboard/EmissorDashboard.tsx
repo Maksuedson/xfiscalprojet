@@ -3,25 +3,32 @@ import DataTable from "@/components/dashboard/DataTable";
 import { FileText, ArrowUpRight, ArrowDownLeft, RotateCcw, Receipt, DollarSign } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from "recharts";
 
-const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const notasPorMes = [
+  { mes: "Jan", entrada: 18, saida: 35, devolucao: 2, nfce: 72 },
+  { mes: "Fev", entrada: 22, saida: 38, devolucao: 1, nfce: 78 },
+  { mes: "Mar", entrada: 15, saida: 42, devolucao: 3, nfce: 65 },
+  { mes: "Abr", entrada: 20, saida: 45, devolucao: 1, nfce: 82 },
+  { mes: "Mai", entrada: 25, saida: 40, devolucao: 2, nfce: 75 },
+  { mes: "Jun", entrada: 19, saida: 48, devolucao: 1, nfce: 88 },
+  { mes: "Jul", entrada: 23, saida: 44, devolucao: 3, nfce: 80 },
+  { mes: "Ago", entrada: 21, saida: 50, devolucao: 2, nfce: 92 },
+  { mes: "Set", entrada: 17, saida: 38, devolucao: 1, nfce: 70 },
+  { mes: "Out", entrada: 24, saida: 52, devolucao: 2, nfce: 95 },
+  { mes: "Nov", entrada: 20, saida: 46, devolucao: 0, nfce: 85 },
+  { mes: "Dez", entrada: 26, saida: 55, devolucao: 1, nfce: 98 },
+];
 
-const notasPorMes = meses.map((mes, i) => ({
-  mes,
-  entrada: Math.floor(Math.random() * 30 + 10),
-  saida: Math.floor(Math.random() * 50 + 20),
-  devolucao: Math.floor(Math.random() * 5),
-  nfce: Math.floor(Math.random() * 80 + 30),
-}));
-
-const valorPorMes = meses.map((mes, i) => ({
-  mes,
-  valor: Math.floor(Math.random() * 80000 + 20000),
-}));
+const valorPorMes = [
+  { mes: "Jan", valor: 42500 }, { mes: "Fev", valor: 48200 }, { mes: "Mar", valor: 38700 },
+  { mes: "Abr", valor: 55300 }, { mes: "Mai", valor: 51800 }, { mes: "Jun", valor: 62400 },
+  { mes: "Jul", valor: 58100 }, { mes: "Ago", valor: 67500 }, { mes: "Set", valor: 45200 },
+  { mes: "Out", valor: 72800 }, { mes: "Nov", valor: 64300 }, { mes: "Dez", valor: 78900 },
+];
 
 const tabelaResumo = notasPorMes.map((n, i) => ({
   mes: n.mes,
   qtd: n.entrada + n.saida + n.devolucao + n.nfce,
-  valor: `R$ ${(valorPorMes[i].valor).toLocaleString("pt-BR")}`,
+  valor: `R$ ${valorPorMes[i].valor.toLocaleString("pt-BR")}`,
 }));
 
 const ultimasNotas = [
@@ -80,36 +87,20 @@ const EmissorDashboard = () => (
       </div>
     </div>
 
-    {/* Resumo mensal */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div>
         <h3 className="text-sm font-semibold text-foreground mb-3">Resumo Mensal — {new Date().getFullYear()}</h3>
-        <DataTable
-          columns={[
-            { key: "mes", header: "Mês" },
-            { key: "qtd", header: "Nº de Notas" },
-            { key: "valor", header: "Valor Total" },
-          ]}
-          data={tabelaResumo}
-        />
+        <DataTable columns={[{ key: "mes", header: "Mês" }, { key: "qtd", header: "Nº de Notas" }, { key: "valor", header: "Valor Total" }]} data={tabelaResumo} />
       </div>
-
       <div className="lg:col-span-2">
         <h3 className="text-sm font-semibold text-foreground mb-3">Últimas Notas Fiscais</h3>
         <DataTable
           columns={[
             { key: "numero", header: "Número" },
-            { key: "tipo", header: "Tipo", render: (r) => <span className="px-2 py-1 rounded-full text-xs bg-primary/10 text-primary font-medium">{r.tipo}</span> },
+            { key: "tipo", header: "Tipo", render: (r: any) => <span className="px-2 py-1 rounded-full text-xs bg-primary/10 text-primary font-medium">{r.tipo}</span> },
             { key: "destinatario", header: "Destinatário" },
             { key: "valor", header: "Valor" },
-            {
-              key: "status", header: "Status",
-              render: (r) => (
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "Autorizada" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>
-                  {r.status}
-                </span>
-              ),
-            },
+            { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "Autorizada" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
             { key: "data", header: "Data" },
           ]}
           data={ultimasNotas}
