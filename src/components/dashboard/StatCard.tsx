@@ -3,7 +3,7 @@ import { useCountUp } from "@/hooks/useScrollReveal";
 
 interface StatCardProps {
   title: string;
-  value: number;
+  value: number | string;
   prefix?: string;
   suffix?: string;
   icon: LucideIcon;
@@ -19,7 +19,8 @@ const colorMap = {
 };
 
 const StatCard = ({ title, value, prefix = "", suffix = "", icon: Icon, trend, color = "primary" }: StatCardProps) => {
-  const count = useCountUp(value, 1500, false, true);
+  const numValue = typeof value === "number" ? value : 0;
+  const count = useCountUp(numValue, 1500, false, true);
 
   return (
     <div className="bg-card border border-border rounded-xl p-5 shadow-card hover:shadow-card-hover transition-shadow">
