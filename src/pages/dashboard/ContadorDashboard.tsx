@@ -5,9 +5,9 @@ import { Building2, CheckCircle, Clock, AlertTriangle, ShieldCheck, DollarSign, 
 import { useAuth } from "@/contexts/AuthContext";
 import { useContadorStats, useCompanies, useCompanyCharges } from "@/hooks/useSupabaseData";
 
-const ContadorDashboard = () => {
+const ContadorDashboard = ({ overrideAccountantId }: { overrideAccountantId?: string }) => {
   const { user } = useAuth();
-  const accountantId = user?.id_contador;
+  const accountantId = overrideAccountantId || user?.id_contador;
   const { data: stats, isLoading } = useContadorStats(accountantId);
   const { data: companies } = useCompanies(accountantId);
   const { data: charges } = useCompanyCharges(accountantId);

@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCustomers, useProducts, useCompanyCharges, useCertificates } from "@/hooks/useSupabaseData";
 
-const EmissorDashboard = () => {
+const EmissorDashboard = ({ overrideCompanyId }: { overrideCompanyId?: string }) => {
   const { user } = useAuth();
-  const companyId = user?.id_empresa;
+  const companyId = overrideCompanyId || user?.id_empresa;
   const { data: customers } = useCustomers(companyId);
   const { data: products } = useProducts(companyId);
   const { data: charges } = useCompanyCharges(undefined, companyId);
