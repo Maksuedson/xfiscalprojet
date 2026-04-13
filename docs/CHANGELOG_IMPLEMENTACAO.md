@@ -1,5 +1,15 @@
 # Changelog de Implementação — xFiscal SaaS
 
+## v7.0 — 13/04/2026 — Fechamento Arquitetura Financeira + PDV→NF-e
+
+### Menu do contador: removidos "Cobranças Empresas" e "Cobrança PIX"
+### Financeiro centralizado em Mensalidades (plataforma + empresas + PIX como método)
+### PDV: botão "Emitir NF-e" para vendas finalizadas com proteção contra duplicação
+### Rota removida: `/dashboard/cobrancas-empresas`
+### Relatório: `docs/RELATORIO_FECHAMENTO_ARQUITETURA_FINANCEIRA_PDV.md`
+
+---
+
 ## v6.0 — 13/04/2026 — PDV/Vendas e Módulos Operacionais
 
 ### Novas tabelas: suppliers, carriers, sales, sale_items (todas com RLS)
