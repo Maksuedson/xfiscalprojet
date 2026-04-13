@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DataTable from "@/components/dashboard/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ const initialContadores = [
 ];
 
 const ContadoresPage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState(initialContadores);
@@ -83,7 +85,7 @@ const ContadoresPage = () => {
       <div className="relative max-w-sm"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" /><Input placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" /></div>
       <DataTable
         columns={[
-          { key: "nome", header: "Nome", render: (r: any) => <div className="flex items-center gap-2"><UserCheck size={16} className="text-primary" /><span className="font-medium">{r.nomeFantasia}</span></div> },
+          { key: "nome", header: "Nome", render: (r: any) => <div className="flex items-center gap-2"><UserCheck size={16} className="text-primary" /><button onClick={() => navigate(`/dashboard/contadores/${r.id}`)} className="font-medium text-primary hover:underline cursor-pointer">{r.nomeFantasia}</button></div> },
           { key: "cnpj", header: "CNPJ" },
           { key: "crc", header: "CRC" },
           { key: "empresas", header: "Empresas" },
