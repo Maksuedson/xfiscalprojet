@@ -1,5 +1,24 @@
 # Mapa de Alterações — xFiscal SaaS
 
+## 13/04/2026 — Módulo de Mensalidades Reestruturado
+
+### Arquivos modificados
+| Arquivo | Alteração |
+|---|---|
+| `src/pages/dashboard/MensalidadesPage.tsx` | Reescrito: 3 views por perfil (admin/contador/emissor), dados reais |
+| `src/pages/contador/CobrancasEmpresasPage.tsx` | Conectado ao Supabase, removidos dados mock |
+| `src/hooks/useSupabaseData.ts` | `usePlatformCharges` aceita filtro por `accountantId` |
+| `src/components/dashboard/DashboardLayout.tsx` | Sidebar: "Mensalidades" só para contador e emissor |
+| `docs/CHANGELOG_IMPLEMENTACAO.md` | Documentação da reestruturação |
+
+### Hierarquia de mensalidades
+- Admin → Cobranças Plataforma (admin→contador)
+- Contador → Mensalidades (bloco plataforma + bloco empresas)
+- Emissor → Mensalidades (apenas suas cobranças)
+
+---
+
+
 ## Estrutura de Pastas
 
 ```
