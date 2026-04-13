@@ -162,10 +162,10 @@ const DashboardLayout = () => {
       {sidebarOpen && (
         <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-hero-gradient flex items-center justify-center text-primary-foreground text-sm font-bold">{user.nome.charAt(0)}</div>
+            <div className="w-9 h-9 rounded-full bg-hero-gradient flex items-center justify-center text-primary-foreground text-sm font-bold">{isImpersonating ? current!.name.charAt(0) : user.nome.charAt(0)}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{user.nome}</p>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${roleBadgeColor[user.role]}`}>{roleLabel[user.role]}</span>
+              <p className="text-sm font-medium text-foreground truncate">{isImpersonating ? current!.name : user.nome}</p>
+              <span className={`text-xs px-2 py-0.5 rounded-full ${roleBadgeColor[displayRole]}`}>{roleLabel[displayRole]}</span>
             </div>
           </div>
           <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}><LogOut size={14} className="mr-2" />Sair</Button>
@@ -223,6 +223,27 @@ const DashboardLayout = () => {
             )}
           </div>
         </header>
+        {isImpersonating && (
+          <div className="sticky top-16 z-20 bg-primary/10 border-b border-primary/20 px-4 py-2 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm text-primary font-medium">
+              <Eye size={16} />
+              <span>
+                Você está acessando o ambiente de{" "}
+                <strong>{current!.name}</strong>
+                {current!.role === "contador" ? " (Contador)" : " (Empresa)"}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs border-primary/30 text-primary hover:bg-primary/10"
+              onClick={() => { goBack(); navigate("/dashboard"); }}
+            >
+              <ArrowLeft size={14} className="mr-1" />
+              {stack.length > 1 ? "Voltar para Contador" : "Voltar para Admin"}
+            </Button>
+          </div>
+        )}
         <main className="p-4 sm:p-6"><Outlet /></main>
       </div>
     </div>
