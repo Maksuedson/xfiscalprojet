@@ -18,6 +18,7 @@ const initialEmpresas = [
 ];
 
 const EmpresasPage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState(initialEmpresas);
@@ -74,7 +75,7 @@ const EmpresasPage = () => {
       <div className="relative max-w-sm"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" /><Input placeholder="Buscar por nome ou CNPJ..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" /></div>
       <DataTable
         columns={[
-          { key: "xFant", header: "Nome Fantasia", render: (r: any) => <div className="flex items-center gap-2"><Building2 size={16} className="text-primary" /><span className="font-medium">{r.xFant}</span></div> },
+          { key: "xFant", header: "Nome Fantasia", render: (r: any) => <div className="flex items-center gap-2"><Building2 size={16} className="text-primary" /><button onClick={() => navigate(`/dashboard/empresas/${r.id}`)} className="font-medium text-primary hover:underline cursor-pointer">{r.xFant}</button></div> },
           { key: "cnpj", header: "CNPJ" }, { key: "ie", header: "IE" }, { key: "uf", header: "UF" }, { key: "cidade", header: "Cidade" }, { key: "notas", header: "Notas" },
           { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "Ativo" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
           { key: "acoes", header: "Ações", render: (r: any) => (
