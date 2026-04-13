@@ -1,5 +1,15 @@
 # Changelog de Implementação — xFiscal SaaS
 
+## v6.0 — 13/04/2026 — PDV/Vendas e Módulos Operacionais
+
+### Novas tabelas: suppliers, carriers, sales, sale_items (todas com RLS)
+### Novo módulo: PDV / Vendas (`/dashboard/vendas`)
+### Menu atualizado: "PDV / Vendas" no emissor
+### Fluxo: Venda → rascunho → finalizada → emissão fiscal → faturada
+### Relatório: `docs/RELATORIO_REFACTOR_PDV_EMPRESA.md`
+
+---
+
 ## v5.0 — 13/04/2026 — Refatoração de Contexto Contador/Empresa
 
 ### Decisão Arquitetural
