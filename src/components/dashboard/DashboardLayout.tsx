@@ -5,7 +5,7 @@ import { useImpersonation } from "@/contexts/ImpersonationContext";
 import {
   LayoutDashboard, Building2, Users, Package, Truck, UserCheck,
   FileText, Receipt, CreditCard, BarChart3, Settings, LogOut,
-  Menu, X, ChevronDown, Bell, Search, Shield, ShieldCheck, DollarSign, Check, ArrowLeft, Eye
+  Menu, X, ChevronDown, Bell, Search, Shield, ShieldCheck, DollarSign, Check, ArrowLeft, Eye, ShoppingCart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -56,6 +56,7 @@ const navItems: NavItem[] = [
   { label: "Produtos", href: "/dashboard/produtos", icon: Package, roles: ["emissor"] },
   { label: "Fornecedores", href: "/dashboard/fornecedores", icon: Truck, roles: ["emissor"] },
   { label: "Transportadoras", href: "/dashboard/transportadoras", icon: Truck, roles: ["emissor"] },
+  { label: "PDV / Vendas", href: "/dashboard/vendas", icon: ShoppingCart, roles: ["emissor"] },
   {
     label: "Notas Fiscais", href: "#", icon: FileText, roles: ["emissor"],
     children: [
