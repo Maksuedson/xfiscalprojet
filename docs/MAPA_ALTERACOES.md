@@ -1,5 +1,20 @@
 # Mapa de Alterações — xFiscal SaaS
 
+## 13/04/2026 — Melhoria Completa PDV/Vendas
+
+### Arquivos alterados
+| Arquivo | Alteração |
+|---|---|
+| `src/pages/dashboard/VendasPage.tsx` | Reescrita completa com tabela, filtros, busca, edição inline, desconto geral, resumo financeiro, detalhe completo |
+
+### Documentação
+| Arquivo | Conteúdo |
+|---|---|
+| `docs/RELATORIO_MELHORIA_COMPLETA_PDV.md` | Relatório da melhoria completa |
+
+---
+
+
 ## 13/04/2026 — PDV/Vendas e Tabelas Operacionais
 
 ### Tabelas criadas
