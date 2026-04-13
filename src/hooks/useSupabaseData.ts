@@ -108,7 +108,7 @@ export function useCreateCompany() {
 export function useUpdateCompany() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...input }: { id: string; [key: string]: any }) => {
+    mutationFn: async ({ id, ...input }: { id: string; razao_social?: string; nome_fantasia?: string; cnpj?: string; ie?: string; email?: string; telefone?: string; endereco?: string; cidade?: string; uf?: string; status?: string }) => {
       const { data, error } = await supabase.from("companies").update(input).eq("id", id).select().single();
       if (error) throw error;
       return data;
