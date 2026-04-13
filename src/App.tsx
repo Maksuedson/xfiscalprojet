@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
 import { PaymentGatewayProvider } from "@/contexts/PaymentGatewayContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
@@ -47,6 +48,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
+        <ImpersonationProvider>
         <PaymentGatewayProvider>
           <BrowserRouter>
             <Routes>
@@ -82,6 +84,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
       </PaymentGatewayProvider>
+      </ImpersonationProvider>
     </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
