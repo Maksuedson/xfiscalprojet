@@ -1,5 +1,22 @@
 # Changelog de Implementação — xFiscal SaaS
 
+## v7.0 — 13/04/2026 — Melhoria Completa do PDV/Vendas
+
+### Reescrita completa do VendasPage.tsx
+- Tabela profissional com filtros (status, pagamento, busca textual)
+- Cards de estatísticas (total, rascunhos, finalizadas, receita faturada)
+- Busca de cliente por nome/CPF/CNPJ em tempo real
+- Busca de produto por nome/NCM em tempo real
+- Edição inline de quantidade, valor unitário e desconto por item
+- Desconto geral da venda com cálculo automático
+- Resumo financeiro completo com validações
+- Modal de detalhe com dados completos e ações por status
+- Formas de pagamento: dinheiro, PIX, cartão crédito/débito, boleto, transferência, outros
+- Relatório: docs/RELATORIO_MELHORIA_COMPLETA_PDV.md
+
+---
+
+
 ## v6.0 — 13/04/2026 — PDV/Vendas e Módulos Operacionais
 
 ### Novas tabelas: suppliers, carriers, sales, sale_items (todas com RLS)
