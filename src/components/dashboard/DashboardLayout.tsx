@@ -1,12 +1,39 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Building2, Users, Package, Truck, UserCheck,
   FileText, Receipt, CreditCard, BarChart3, Settings, LogOut,
-  Menu, X, ChevronDown, Bell, Search, Shield, ShieldCheck, DollarSign
+  Menu, X, ChevronDown, Bell, Search, Shield, ShieldCheck, DollarSign, Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+interface Notification {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  read: boolean;
+  type: "info" | "warning" | "error";
+}
+
+const notificationsByRole: Record<UserRole, Notification[]> = {
+  admin: [
+    { id: "1", title: "Cobrança vencida", description: "PL Assessoria — cobrança de Mar/2026 vencida há 15 dias", time: "Há 2 horas", read: false, type: "error" },
+    { id: "2", title: "Novo contador cadastrado", description: "Pedro Lima Assessoria se cadastrou na plataforma", time: "Há 5 horas", read: false, type: "info" },
+    { id: "3", title: "Certificado vencendo", description: "2 empresas com certificado A1 vencendo em 30 dias", time: "Há 1 dia", read: false, type: "warning" },
+  ],
+  contador: [
+    { id: "1", title: "Certificado vencendo", description: "Comércio Digital ME — certificado vence em 70 dias", time: "Há 3 horas", read: false, type: "warning" },
+    { id: "2", title: "Empresa bloqueada", description: "Import Export SA bloqueada por certificado vencido", time: "Há 1 dia", read: false, type: "error" },
+    { id: "3", title: "Cobrança pendente", description: "2 cobranças de empresas pendentes para Abr/2026", time: "Há 2 dias", read: false, type: "info" },
+  ],
+  emissor: [
+    { id: "1", title: "Cobrança pendente", description: "Você tem 2 cobranças pendentes. Pague para evitar bloqueio.", time: "Há 1 dia", read: false, type: "warning" },
+    { id: "2", title: "NF-e rejeitada", description: "NF-e 000138 foi rejeitada pela SEFAZ. Verifique os dados.", time: "Há 3 dias", read: false, type: "error" },
+    { id: "3", title: "Atualização fiscal", description: "Nova tabela CFOP disponível. Atualize suas configurações.", time: "Há 5 dias", read: false, type: "info" },
+  ],
+};
 
 interface NavItem {
   label: string;
