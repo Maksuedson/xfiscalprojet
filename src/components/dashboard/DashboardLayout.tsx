@@ -52,12 +52,12 @@ const navItems: NavItem[] = [
   { label: "Cobranças Empresas", href: "/dashboard/cobrancas-empresas", icon: CreditCard, roles: ["contador"] },
   { label: "Mensalidades", href: "/dashboard/mensalidades", icon: Receipt, roles: ["contador", "emissor"] },
   { label: "Certificados A1", href: "/dashboard/certificados", icon: ShieldCheck, roles: ["contador"] },
-  { label: "Clientes", href: "/dashboard/clientes", icon: Users, roles: ["contador", "emissor"] },
-  { label: "Produtos", href: "/dashboard/produtos", icon: Package, roles: ["contador", "emissor"] },
-  { label: "Fornecedores", href: "/dashboard/fornecedores", icon: Truck, roles: ["contador", "emissor"] },
-  { label: "Transportadoras", href: "/dashboard/transportadoras", icon: Truck, roles: ["contador", "emissor"] },
+  { label: "Clientes", href: "/dashboard/clientes", icon: Users, roles: ["emissor"] },
+  { label: "Produtos", href: "/dashboard/produtos", icon: Package, roles: ["emissor"] },
+  { label: "Fornecedores", href: "/dashboard/fornecedores", icon: Truck, roles: ["emissor"] },
+  { label: "Transportadoras", href: "/dashboard/transportadoras", icon: Truck, roles: ["emissor"] },
   {
-    label: "Notas Fiscais", href: "#", icon: FileText, roles: ["contador", "emissor"],
+    label: "Notas Fiscais", href: "#", icon: FileText, roles: ["emissor"],
     children: [
       { label: "NF-e Entrada", href: "/dashboard/nfe/entrada" },
       { label: "NF-e Saída", href: "/dashboard/nfe/saida" },

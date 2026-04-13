@@ -1,5 +1,20 @@
 # Mapa de Alterações — xFiscal SaaS
 
+## 13/04/2026 — Refatoração Contexto Contador/Empresa
+
+### Arquivos modificados
+| Arquivo | Alteração |
+|---|---|
+| `src/components/dashboard/DashboardLayout.tsx` | Removido role `contador` de Clientes, Produtos, Fornecedores, Transportadoras, Notas Fiscais |
+
+### Documentação
+| Arquivo | Conteúdo |
+|---|---|
+| `docs/RELATORIO_REFACTOR_CONTEXTO_CONTADOR_EMPRESA.md` | Análise completa e decisão técnica |
+
+---
+
+
 ## 13/04/2026 — Auditoria Funcional da Área do Contador
 
 ### Documentação gerada
