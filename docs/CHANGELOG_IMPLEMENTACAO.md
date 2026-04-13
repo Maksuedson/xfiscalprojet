@@ -1,5 +1,18 @@
 # Changelog de Implementação — xFiscal SaaS
 
+## v5.0 — 13/04/2026 — Refatoração de Contexto Contador/Empresa
+
+### Decisão Arquitetural
+- Módulos operacionais (Clientes, Produtos, Fornecedores, Transportadoras, Notas Fiscais) removidos do menu principal do Contador
+- Esses módulos agora aparecem apenas no contexto da Empresa (via botão "Acessar")
+- Relatório técnico: `docs/RELATORIO_REFACTOR_CONTEXTO_CONTADOR_EMPRESA.md`
+
+### Arquivos alterados
+- `src/components/dashboard/DashboardLayout.tsx` — roles ajustados no navItems
+
+---
+
+
 ## v4.0 — 13/04/2026 — Auditoria Funcional da Área do Contador
 
 ### Escopo
