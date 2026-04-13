@@ -1,5 +1,20 @@
 # Mapa de Alterações — xFiscal SaaS
 
+## 13/04/2026 — Auditoria Funcional da Área do Contador
+
+### Documentação gerada
+| Arquivo | Conteúdo |
+|---|---|
+| `docs/RELATORIO_AREA_CONTADOR.md` | Relatório completo de auditoria com análise dos 13 menus |
+
+### Problemas identificados
+- 6 módulos com dados mock (Clientes, Produtos, Fornecedores, Transportadoras, NF-e/NFC-e, PIX, Certificados, Relatórios)
+- 2 menus redundantes (Cobranças Empresas duplica bloco 2 de Mensalidades; PIX separado)
+- 2 tabelas faltantes no banco (suppliers, carriers)
+- Módulos operacionais sem seletor de empresa (Clientes, Produtos etc.)
+
+---
+
 ## 13/04/2026 — Módulo de Mensalidades Reestruturado
 
 ### Arquivos modificados

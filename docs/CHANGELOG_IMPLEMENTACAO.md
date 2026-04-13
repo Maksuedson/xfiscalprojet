@@ -1,5 +1,20 @@
 # Changelog de Implementação — xFiscal SaaS
 
+## v4.0 — 13/04/2026 — Auditoria Funcional da Área do Contador
+
+### Escopo
+- Auditoria completa dos 13 menus do perfil Contador
+- Análise de conexão com banco de dados (real vs mock)
+- Identificação de redundâncias e problemas de arquitetura
+
+### Resultado
+- Relatório completo em `docs/RELATORIO_AREA_CONTADOR.md`
+- 30% funcional real, 70% visual/mock
+- 2 menus redundantes, 2 tabelas faltantes no banco
+- Problema crítico: módulos operacionais sem seletor de empresa
+
+---
+
 ## v3.0 — 13/04/2026 — Reestruturação do Módulo de Mensalidades
 
 ### Problema
