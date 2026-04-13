@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
 import {
   LayoutDashboard, Building2, Users, Package, Truck, UserCheck,
   FileText, Receipt, CreditCard, BarChart3, Settings, LogOut,
-  Menu, X, ChevronDown, Bell, Search, Shield, ShieldCheck, DollarSign, Check
+  Menu, X, ChevronDown, Bell, Search, Shield, ShieldCheck, DollarSign, Check, ArrowLeft, Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -72,13 +73,17 @@ const navItems: NavItem[] = [
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
+  const { isImpersonating, current, stack, effectiveRole, goBack } = useImpersonation();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-  const [notifications, setNotifications] = useState<Notification[]>(notificationsByRole[user.role] || []);
+  // Use effectiveRole for filtering menu items
+  const activeRole: UserRole = effectiveRole;
+
+  const [notifications, setNotifications] = useState<Notification[]>(notificationsByRole[user?.role || "emissor"] || []);
   const [showNotifications, setShowNotifications] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +101,7 @@ const DashboardLayout = () => {
 
   if (!user) return null;
 
-  const filteredItems = navItems.filter((item) => item.roles.includes(user.role));
+  const filteredItems = navItems.filter((item) => item.roles.includes(activeRole));
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return location.pathname === "/dashboard";
@@ -107,6 +112,7 @@ const DashboardLayout = () => {
 
   const roleLabel: Record<UserRole, string> = { admin: "Administrador", contador: "Contador", emissor: "Emissor" };
   const roleBadgeColor: Record<UserRole, string> = { admin: "bg-destructive/10 text-destructive", contador: "bg-primary/10 text-primary", emissor: "bg-accent/10 text-accent" };
+  const displayRole = isImpersonating ? activeRole : user.role;
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
