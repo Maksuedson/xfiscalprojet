@@ -185,10 +185,37 @@ const DashboardLayout = () => {
               <input type="text" placeholder="Buscar..." className="w-full h-9 pl-9 pr-3 rounded-lg border border-border bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
           </div>
-          <button className="relative text-muted-foreground hover:text-foreground">
-            <Bell size={20} />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center">3</span>
-          </button>
+          <div className="relative" ref={notifRef}>
+            <button className="relative text-muted-foreground hover:text-foreground" onClick={() => setShowNotifications(!showNotifications)}>
+              <Bell size={20} />
+              {unreadCount > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center">{unreadCount}</span>}
+            </button>
+            {showNotifications && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <h3 className="text-sm font-semibold text-foreground">Notificações</h3>
+                  {unreadCount > 0 && <button onClick={markAllRead} className="text-xs text-primary hover:underline">Marcar todas como lidas</button>}
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-6">Nenhuma notificação</p>
+                  ) : notifications.map((n) => (
+                    <button key={n.id} onClick={() => markAsRead(n.id)} className={`w-full text-left px-4 py-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors ${!n.read ? "bg-primary/5" : ""}`}>
+                      <div className="flex items-start gap-2">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.type === "error" ? "bg-destructive" : n.type === "warning" ? "bg-[hsl(45,93%,47%)]" : "bg-primary"}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm ${!n.read ? "font-semibold text-foreground" : "font-medium text-muted-foreground"}`}>{n.title}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">{n.description}</p>
+                          <p className="text-xs text-muted-foreground/70 mt-1">{n.time}</p>
+                        </div>
+                        {!n.read && <Check size={14} className="text-primary mt-1 flex-shrink-0" />}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </header>
         <main className="p-4 sm:p-6"><Outlet /></main>
       </div>
