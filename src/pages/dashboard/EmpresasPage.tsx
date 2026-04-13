@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DataTable from "@/components/dashboard/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Building2, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, Building2, Pencil, Trash2, LogIn } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -118,6 +118,7 @@ const EmpresasPage = () => {
           { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "ativa" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
           { key: "acoes", header: "Ações", render: (r: any) => (
             <div className="flex gap-1">
+              <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => navigate(`/dashboard/empresas/${r.id}`)}><LogIn size={14} className="mr-1" />Acessar</Button>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(r)}><Pencil size={14} /></Button>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive" onClick={() => handleDelete(r.id)}><Trash2 size={14} /></Button>
             </div>

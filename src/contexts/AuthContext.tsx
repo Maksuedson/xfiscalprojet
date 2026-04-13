@@ -25,7 +25,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-// Map for demo users — email-based login
 const DEMO_EMAILS: Record<string, string> = {
   admin: "admin@xfiscal.com",
   contador: "contador@xfiscal.com",
@@ -105,34 +104,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    let mounted = true;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setSupabaseUser(session.user);
-        const u = await buildUser(session.user);
-        setUser(u);
+        // Use setTimeout to avoid blocking the auth state change callback
+        setTimeout(async () => {
+          try {
+            const u = await buildUser(session.user);
+            if (mounted) { setUser(u); setLoading(false); }
+          } catch (err) {
+            console.error("Error building user:", err);
+            if (mounted) setLoading(false);
+          }
+        }, 0);
       } else {
         setSupabaseUser(null);
         setUser(null);
+        if (mounted) setLoading(false);
       }
-      setLoading(false);
     });
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         setSupabaseUser(session.user);
-        const u = await buildUser(session.user);
-        setUser(u);
+        try {
+          const u = await buildUser(session.user);
+          if (mounted) { setUser(u); setLoading(false); }
+        } catch (err) {
+          console.error("Error building user:", err);
+          if (mounted) setLoading(false);
+        }
+      } else {
+        if (mounted) setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => { mounted = false; subscription.unsubscribe(); };
   }, []);
 
   const login = useCallback(async (usuario: string, senha: string) => {
-    // Support demo shorthand (admin/admin123) or real email
     const email = DEMO_EMAILS[usuario] || (usuario.includes("@") ? usuario : `${usuario}@xfiscal.com`);
-    
     const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
     if (error) {
       console.error("Login error:", error.message);
