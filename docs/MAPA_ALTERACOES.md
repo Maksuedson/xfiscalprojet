@@ -7,7 +7,8 @@ src/
 ├── types/
 │   └── index.ts                          # Tipos centralizados do sistema
 ├── contexts/
-│   └── AuthContext.tsx                    # Autenticação com 3 perfis
+│   ├── AuthContext.tsx                    # Autenticação com 3 perfis
+│   └── ImpersonationContext.tsx           # Acesso direto (admin→contador, contador→empresa)
 ├── components/
 │   ├── dashboard/
 │   │   ├── DashboardLayout.tsx           # Layout principal com sidebar
