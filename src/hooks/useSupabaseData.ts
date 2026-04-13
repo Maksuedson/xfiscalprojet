@@ -129,11 +129,13 @@ export function useDeleteCompany() {
 }
 
 // ==================== PLATFORM CHARGES ====================
-export function usePlatformCharges() {
+export function usePlatformCharges(accountantId?: string) {
   return useQuery({
-    queryKey: ["platform_charges"],
+    queryKey: ["platform_charges", accountantId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("platform_charges").select("*, accountants(nome, plano)").order("created_at", { ascending: false });
+      let q = supabase.from("platform_charges").select("*, accountants(nome, plano)").order("created_at", { ascending: false });
+      if (accountantId) q = q.eq("accountant_id", accountantId);
+      const { data, error } = await q;
       if (error) throw error;
       return data;
     },
