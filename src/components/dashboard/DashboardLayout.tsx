@@ -78,6 +78,22 @@ const DashboardLayout = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
+  const [notifications, setNotifications] = useState<Notification[]>(notificationsByRole[user.role] || []);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setShowNotifications(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+  const markAsRead = (id: string) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  const markAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+
   if (!user) return null;
 
   const filteredItems = navItems.filter((item) => item.roles.includes(user.role));
