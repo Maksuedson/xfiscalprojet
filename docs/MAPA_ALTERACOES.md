@@ -1,21 +1,5 @@
 # Mapa de Alterações — xFiscal SaaS
 
-## 13/04/2026 — Fechamento Arquitetura Financeira + PDV→NF-e
-
-### Arquivos alterados
-| Arquivo | Alteração |
-|---|---|
-| `src/components/dashboard/DashboardLayout.tsx` | Removidos "Cobranças Empresas" e "Cobrança PIX" do menu contador |
-| `src/pages/dashboard/VendasPage.tsx` | Botão "Emitir NF-e" para vendas finalizadas |
-| `src/App.tsx` | Removida rota e import de CobrancasEmpresasPage |
-
-### Documentação
-| Arquivo | Conteúdo |
-|---|---|
-| `docs/RELATORIO_FECHAMENTO_ARQUITETURA_FINANCEIRA_PDV.md` | Relatório completo do fechamento |
-
----
-
 ## 13/04/2026 — PDV/Vendas e Tabelas Operacionais
 
 ### Tabelas criadas

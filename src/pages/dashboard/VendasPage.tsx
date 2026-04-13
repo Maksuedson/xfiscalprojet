@@ -365,8 +365,8 @@ const VendasPage = () => {
                   )}
                   {sale.status === "finalizada" && (
                     <Button size="sm" variant="default" onClick={() => {
-                      toast.info("Venda selecionada para emissão fiscal. Navegue até Notas Fiscais > NF-e Saída para emitir.");
                       updateStatus.mutate({ id: sale.id, status: "faturada" });
+                      toast.info("Venda faturada! Navegue até Notas Fiscais > NF-e Saída para emitir.");
                     }}>
                       Emitir NF-e
                     </Button>
