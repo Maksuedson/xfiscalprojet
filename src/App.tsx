@@ -16,6 +16,7 @@ import BlogPost from "./pages/BlogPost";
 import Login from "./pages/Login";
 import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
+import VendasPage from "./pages/dashboard/VendasPage";
 
 // Dashboard pages
 import DashboardHome from "./pages/dashboard/DashboardHome";
@@ -76,6 +77,7 @@ const App = () => (
               <Route path="nfce" element={<NFCePage />} />
               <Route path="pix" element={<PixPage />} />
               <Route path="mensalidades" element={<MensalidadesPage />} />
+              <Route path="vendas" element={<VendasPage />} />
               <Route path="relatorios" element={<RelatoriosPage />} />
               <Route path="configuracoes" element={<ConfiguracoesPage />} />
             </Route>

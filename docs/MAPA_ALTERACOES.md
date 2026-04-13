@@ -1,5 +1,29 @@
 # Mapa de Alterações — xFiscal SaaS
 
+## 13/04/2026 — PDV/Vendas e Tabelas Operacionais
+
+### Tabelas criadas
+| Tabela | Descrição |
+|---|---|
+| `suppliers` | Fornecedores por empresa |
+| `carriers` | Transportadoras por empresa |
+| `sales` | Vendas/PDV por empresa |
+| `sale_items` | Itens de cada venda |
+
+### Arquivos criados/modificados
+| Arquivo | Alteração |
+|---|---|
+| `src/pages/dashboard/VendasPage.tsx` | **NOVO** — PDV completo |
+| `src/components/dashboard/DashboardLayout.tsx` | Menu "PDV / Vendas" para emissor |
+| `src/App.tsx` | Rota `/dashboard/vendas` |
+
+### Documentação
+| Arquivo | Conteúdo |
+|---|---|
+| `docs/RELATORIO_REFACTOR_PDV_EMPRESA.md` | Relatório da refatoração |
+
+---
+
 ## 13/04/2026 — Refatoração Contexto Contador/Empresa
 
 ### Arquivos modificados
