@@ -39,7 +39,6 @@ import CobrancasPlataformaPage from "./pages/admin/CobrancasPlataformaPage";
 import AuditoriaPage from "./pages/admin/AuditoriaPage";
 import EmpresaDetalhePage from "./pages/contador/EmpresaDetalhePage";
 import CertificadosPage from "./pages/contador/CertificadosPage";
-import CertificadosPage from "./pages/contador/CertificadosPage";
 
 const queryClient = new QueryClient();
 
