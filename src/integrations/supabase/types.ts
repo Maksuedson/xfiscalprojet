@@ -89,6 +89,50 @@ export type Database = {
         }
         Relationships: []
       }
+      carriers: {
+        Row: {
+          antt: string | null
+          company_id: string
+          cpf_cnpj: string | null
+          created_at: string
+          id: string
+          nome: string
+          placa: string | null
+          uf: string | null
+          updated_at: string
+        }
+        Insert: {
+          antt?: string | null
+          company_id: string
+          cpf_cnpj?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          placa?: string | null
+          uf?: string | null
+          updated_at?: string
+        }
+        Update: {
+          antt?: string | null
+          company_id?: string
+          cpf_cnpj?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          placa?: string | null
+          uf?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carriers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           accountant_id: string
@@ -452,6 +496,167 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      sale_items: {
+        Row: {
+          created_at: string
+          desconto: number
+          id: string
+          nome_produto: string
+          preco_unitario: number
+          product_id: string | null
+          quantidade: number
+          sale_id: string
+          subtotal: number
+        }
+        Insert: {
+          created_at?: string
+          desconto?: number
+          id?: string
+          nome_produto: string
+          preco_unitario?: number
+          product_id?: string | null
+          quantidade?: number
+          sale_id: string
+          subtotal?: number
+        }
+        Update: {
+          created_at?: string
+          desconto?: number
+          id?: string
+          nome_produto?: string
+          preco_unitario?: number
+          product_id?: string | null
+          quantidade?: number
+          sale_id?: string
+          subtotal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          company_id: string
+          created_at: string
+          customer_id: string | null
+          desconto: number
+          forma_pagamento: string | null
+          id: string
+          numero: number
+          observacoes: string | null
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          customer_id?: string | null
+          desconto?: number
+          forma_pagamento?: string | null
+          id?: string
+          numero?: number
+          observacoes?: string | null
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          customer_id?: string | null
+          desconto?: number
+          forma_pagamento?: string | null
+          id?: string
+          numero?: number
+          observacoes?: string | null
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          cidade: string | null
+          company_id: string
+          cpf_cnpj: string | null
+          created_at: string
+          email: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          telefone: string | null
+          uf: string | null
+          updated_at: string
+        }
+        Insert: {
+          cidade?: string | null
+          company_id: string
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          telefone?: string | null
+          uf?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cidade?: string | null
+          company_id?: string
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+          uf?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       system_settings: {
         Row: {
