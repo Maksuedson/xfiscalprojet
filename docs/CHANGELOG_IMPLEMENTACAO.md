@@ -1,5 +1,44 @@
 # Changelog de Implementação — xFiscal SaaS
 
+## v3.0 — 13/04/2026 — Reestruturação do Módulo de Mensalidades
+
+### Problema
+- MensalidadesPage usava dados mockados e misturava lógica de admin/contador/emissor
+- CobrancasEmpresasPage usava dados mockados
+- Sem isolamento de dados por perfil no módulo de mensalidades
+- Sidebar mostrava "Mensalidades" para admin redundantemente com "Cobranças Plataforma"
+
+### Correções e Implementações
+
+#### Separação de dois tipos de cobrança
+- **Mensalidade da Plataforma** (admin → contador): tabela `platform_charges`, visível para admin e contador
+- **Mensalidade da Empresa** (contador → empresa): tabela `company_charges`, visível para contador e empresa
+
+#### Arquivos alterados
+- `src/pages/dashboard/MensalidadesPage.tsx` — reescrito completo com 3 views isoladas por role (AdminMensalidades, ContadorMensalidades, EmissorMensalidades)
+- `src/pages/contador/CobrancasEmpresasPage.tsx` — conectado ao Supabase real (removidos dados mockados)
+- `src/hooks/useSupabaseData.ts` — hook `usePlatformCharges` agora aceita `accountantId` opcional para filtrar por contador
+- `src/components/dashboard/DashboardLayout.tsx` — sidebar: "Mensalidades" removido do admin (já tem "Cobranças Plataforma")
+
+#### Regras de hierarquia aplicadas
+- Admin vê apenas mensalidades da plataforma (admin→contador)
+- Contador vê: (1) sua mensalidade da plataforma (bloco separado), (2) cobranças das suas empresas
+- Emissor vê apenas suas próprias mensalidades criadas pelo contador
+- Nenhum perfil vê dados de outro contexto
+
+#### Regras de plano
+- Plano existe apenas no cadastro do contador (tabela `accountants.plano`)
+- Empresa NÃO tem plano — valor da cobrança é definido pelo contador
+- Valor da mensalidade do contador é baseado no plano vinculado
+
+#### Segurança (RLS já existente)
+- `platform_charges`: admin vê tudo, contador vê apenas suas cobranças
+- `company_charges`: admin vê tudo, contador vê apenas de suas empresas, emissor vê apenas suas cobranças
+- Dados isolados por `accountant_id` e `company_id` em todas as queries
+
+---
+
+
 ## v2.0 — 11/04/2026
 
 ### Arquivos Criados
