@@ -38,7 +38,6 @@ import ContadorDetalhePage from "./pages/admin/ContadorDetalhePage";
 import CobrancasPlataformaPage from "./pages/admin/CobrancasPlataformaPage";
 import AuditoriaPage from "./pages/admin/AuditoriaPage";
 import EmpresaDetalhePage from "./pages/contador/EmpresaDetalhePage";
-import CobrancasEmpresasPage from "./pages/contador/CobrancasEmpresasPage";
 import CertificadosPage from "./pages/contador/CertificadosPage";
 
 const queryClient = new QueryClient();
@@ -70,7 +69,6 @@ const App = () => (
               <Route path="contadores/:id" element={<ContadorDetalhePage />} />
               <Route path="empresas/:id" element={<EmpresaDetalhePage />} />
               <Route path="cobrancas-plataforma" element={<CobrancasPlataformaPage />} />
-              <Route path="cobrancas-empresas" element={<CobrancasEmpresasPage />} />
               <Route path="certificados" element={<CertificadosPage />} />
               <Route path="auditoria" element={<AuditoriaPage />} />
               <Route path="nfe/:tipo" element={<NFePage />} />
