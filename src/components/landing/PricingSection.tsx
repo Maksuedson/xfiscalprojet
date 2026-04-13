@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
@@ -31,6 +32,11 @@ const plans = [
 
 const PricingSection = () => {
   const { ref, isVisible } = useScrollReveal();
+  const navigate = useNavigate();
+
+  const handleStartPlan = (planName: string) => {
+    navigate(`/checkout?plano=${planName.toLowerCase()}`);
+  };
 
   return (
     <section id="planos" className="py-24 bg-muted/30">
@@ -83,7 +89,7 @@ const PricingSection = () => {
                 ))}
               </ul>
 
-              <Button variant={plan.variant} className="w-full" size="lg">
+              <Button variant={plan.variant} className="w-full" size="lg" onClick={() => handleStartPlan(plan.name)}>
                 Começar agora
               </Button>
             </div>
