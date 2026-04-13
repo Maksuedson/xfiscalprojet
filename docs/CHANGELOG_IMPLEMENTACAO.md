@@ -47,3 +47,31 @@
 - Auditoria → "Exportar CSV" → download real
 - Cobranças Plataforma → "Nova Cobrança" / "Ver detalhe" / "Marcar pago" → funcionais
 - Cobranças Empresas → "Nova Cobrança" / "QR Code PIX" / "Confirmar pagamento" → funcionais
+
+## v3.0 — 13/04/2026 — Acesso Direto (Impersonação)
+
+### Arquivos Criados
+
+| Arquivo | Descrição |
+|---------|-----------|
+| `src/contexts/ImpersonationContext.tsx` | Contexto de impersonação com stack, permitindo admin→contador e contador→empresa |
+
+### Arquivos Alterados
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/App.tsx` | Adicionado ImpersonationProvider envolvendo PaymentGatewayProvider |
+| `src/components/dashboard/DashboardLayout.tsx` | Banner visual de acesso direto no topo + botão Voltar + sidebar adapta ao perfil efetivo |
+| `src/pages/dashboard/DashboardHome.tsx` | Usa effectiveRole do ImpersonationContext para renderizar o dashboard correto |
+| `src/pages/dashboard/ContadorDashboard.tsx` | Aceita prop overrideAccountantId para funcionar em impersonação |
+| `src/pages/dashboard/EmissorDashboard.tsx` | Aceita prop overrideCompanyId para funcionar em impersonação |
+| `src/pages/dashboard/ContadoresPage.tsx` | Botão "Acessar" agora chama enterContador() e redireciona ao dashboard |
+| `src/pages/dashboard/EmpresasPage.tsx` | Botão "Acessar" agora chama enterEmpresa() e redireciona ao dashboard |
+| `docs/MAPA_ALTERACOES.md` | Adicionado ImpersonationContext na estrutura |
+
+### Como funciona
+
+1. **Admin clica "Acessar" em um contador** → `enterContador(id, nome)` é chamado → sidebar muda para menu de contador → dashboard exibe dados do contador → banner azul no topo mostra "Você está acessando o ambiente do Contador X" com botão "Voltar para Admin"
+2. **Contador (ou admin impersonando contador) clica "Acessar" em uma empresa** → `enterEmpresa(id, nome)` é chamado → sidebar muda para menu de emissor → dashboard exibe dados da empresa → banner mostra "Você está acessando o ambiente da Empresa Y" com botão "Voltar para Contador"
+3. **Botão Voltar** → remove o último nível do stack de impersonação → restaura contexto anterior
+4. **Stack** suporta admin→contador→empresa (2 níveis) com retorno progressivo

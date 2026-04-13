@@ -4,6 +4,7 @@ import DataTable from "@/components/dashboard/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, UserCheck, Pencil, Trash2, LogIn } from "lucide-react";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import { useAccountants, useCreateAccountant, useUpdateAccountant, useDeleteAcco
 
 const ContadoresPage = () => {
   const navigate = useNavigate();
+  const { enterContador } = useImpersonation();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editItem, setEditItem] = useState<any>(null);
@@ -110,7 +112,7 @@ const ContadoresPage = () => {
           { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "ativo" ? "bg-accent/10 text-accent" : r.status === "suspenso" ? "bg-[hsl(45,93%,47%)]/10 text-[hsl(45,93%,47%)]" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
           { key: "acoes", header: "Ações", render: (r: any) => (
             <div className="flex gap-1">
-              <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => navigate(`/dashboard/contadores/${r.id}`)}><LogIn size={14} className="mr-1" />Acessar</Button>
+              <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => { enterContador(r.id, r.nome); navigate("/dashboard"); }}><LogIn size={14} className="mr-1" />Acessar</Button>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(r)}><Pencil size={14} /></Button>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive" onClick={() => handleDelete(r.id)}><Trash2 size={14} /></Button>
             </div>

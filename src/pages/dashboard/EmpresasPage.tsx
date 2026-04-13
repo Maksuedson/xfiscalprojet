@@ -8,13 +8,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { useCompanies, useCreateCompany, useUpdateCompany, useDeleteCompany, useAccountants } from "@/hooks/useSupabaseData";
 
 const EmpresasPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
-  const accountantId = user?.role === "contador" ? user.id_contador : undefined;
+  const { enterEmpresa, effectiveRole, effectiveAccountantId } = useImpersonation();
+  const isAdmin = effectiveRole === "admin";
+  const accountantId = effectiveRole === "contador" ? effectiveAccountantId : (user?.role === "contador" ? user.id_contador : undefined);
 
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -118,7 +120,7 @@ const EmpresasPage = () => {
           { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "ativa" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
           { key: "acoes", header: "Ações", render: (r: any) => (
             <div className="flex gap-1">
-              <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => navigate(`/dashboard/empresas/${r.id}`)}><LogIn size={14} className="mr-1" />Acessar</Button>
+              <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => { enterEmpresa(r.id, r.nome_fantasia || r.razao_social, r.accountant_id); navigate("/dashboard"); }}><LogIn size={14} className="mr-1" />Acessar</Button>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(r)}><Pencil size={14} /></Button>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive" onClick={() => handleDelete(r.id)}><Trash2 size={14} /></Button>
             </div>
