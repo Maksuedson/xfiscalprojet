@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export type UserRole = "admin" | "contador" | "emissor";
 
@@ -14,52 +16,139 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  supabaseUser: SupabaseUser | null;
   isAuthenticated: boolean;
-  login: (usuario: string, senha: string) => Promise<boolean>;
+  loading: boolean;
+  login: (email: string, senha: string) => Promise<boolean>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-// Demo users for the SaaS showcase
-const DEMO_USERS: Record<string, { senha: string; user: User }> = {
-  admin: {
-    senha: "admin123",
-    user: { id: "1", nome: "Administrador", usuario: "admin", role: "admin" },
-  },
-  contador: {
-    senha: "contador123",
-    user: { id: "2", nome: "João Silva Contabilidade", usuario: "contador", role: "contador", id_contador: "1" },
-  },
-  emissor: {
-    senha: "emissor123",
-    user: { id: "3", nome: "Tech Solutions LTDA", usuario: "emissor", role: "emissor", id_contador: "1", id_empresa: "1", empresa: "Tech Solutions LTDA" },
-  },
+// Map for demo users — email-based login
+const DEMO_EMAILS: Record<string, string> = {
+  admin: "admin@xfiscal.com",
+  contador: "contador@xfiscal.com",
+  emissor: "emissor@xfiscal.com",
 };
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = sessionStorage.getItem("xfiscal_user");
-    return saved ? JSON.parse(saved) : null;
-  });
+async function fetchUserRole(userId: string): Promise<UserRole> {
+  const { data } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .limit(1)
+    .single();
+  return (data?.role as UserRole) || "emissor";
+}
 
-  const login = useCallback(async (usuario: string, senha: string) => {
-    const entry = DEMO_USERS[usuario];
-    if (entry && entry.senha === senha) {
-      setUser(entry.user);
-      sessionStorage.setItem("xfiscal_user", JSON.stringify(entry.user));
-      return true;
+async function fetchProfile(userId: string) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+  return data;
+}
+
+async function fetchAccountantId(userId: string): Promise<string | undefined> {
+  const { data } = await supabase
+    .from("accountants")
+    .select("id")
+    .eq("user_id", userId)
+    .limit(1)
+    .single();
+  return data?.id;
+}
+
+async function fetchCompanyInfo(userId: string): Promise<{ id?: string; nome?: string; accountant_id?: string }> {
+  const { data } = await supabase
+    .from("companies")
+    .select("id, razao_social, accountant_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .single();
+  return data ? { id: data.id, nome: data.razao_social, accountant_id: data.accountant_id } : {};
+}
+
+async function buildUser(supabaseUser: SupabaseUser): Promise<User> {
+  const [role, profile] = await Promise.all([
+    fetchUserRole(supabaseUser.id),
+    fetchProfile(supabaseUser.id),
+  ]);
+
+  const base: User = {
+    id: supabaseUser.id,
+    nome: profile?.nome || supabaseUser.email || "",
+    usuario: supabaseUser.email?.split("@")[0] || "",
+    role,
+  };
+
+  if (role === "contador") {
+    const accId = await fetchAccountantId(supabaseUser.id);
+    if (accId) base.id_contador = accId;
+  } else if (role === "emissor") {
+    const company = await fetchCompanyInfo(supabaseUser.id);
+    if (company.id) {
+      base.id_empresa = company.id;
+      base.empresa = company.nome;
+      base.id_contador = company.accountant_id;
     }
-    return false;
+  }
+
+  return base;
+}
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        setSupabaseUser(session.user);
+        const u = await buildUser(session.user);
+        setUser(u);
+      } else {
+        setSupabaseUser(null);
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        setSupabaseUser(session.user);
+        const u = await buildUser(session.user);
+        setUser(u);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const logout = useCallback(() => {
+  const login = useCallback(async (usuario: string, senha: string) => {
+    // Support demo shorthand (admin/admin123) or real email
+    const email = DEMO_EMAILS[usuario] || (usuario.includes("@") ? usuario : `${usuario}@xfiscal.com`);
+    
+    const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+    if (error) {
+      console.error("Login error:", error.message);
+      return false;
+    }
+    return true;
+  }, []);
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    sessionStorage.removeItem("xfiscal_user");
+    setSupabaseUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, supabaseUser, isAuthenticated: !!user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
