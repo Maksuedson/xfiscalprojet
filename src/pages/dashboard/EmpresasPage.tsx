@@ -7,45 +7,64 @@ import { Plus, Search, Building2, Pencil, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-
-const initialEmpresas = [
-  { id: 1, xFant: "Tech Solutions LTDA", cnpj: "12.345.678/0001-90", ie: "123456789", uf: "SP", cidade: "São Paulo", status: "Ativo", notas: 142 },
-  { id: 2, xFant: "Comércio Digital ME", cnpj: "98.765.432/0001-10", ie: "987654321", uf: "RJ", cidade: "Rio de Janeiro", status: "Ativo", notas: 89 },
-  { id: 3, xFant: "Import Export SA", cnpj: "11.222.333/0001-44", ie: "112233445", uf: "MG", cidade: "Belo Horizonte", status: "Ativo", notas: 256 },
-  { id: 4, xFant: "Restaurante Sabor", cnpj: "55.666.777/0001-88", ie: "556677889", uf: "SP", cidade: "Campinas", status: "Ativo", notas: 567 },
-  { id: 5, xFant: "Loja Virtual Pro", cnpj: "33.444.555/0001-22", ie: "334455667", uf: "PR", cidade: "Curitiba", status: "Desativado", notas: 34 },
-  { id: 6, xFant: "Padaria Central", cnpj: "77.888.999/0001-55", ie: "778899001", uf: "SP", cidade: "Santos", status: "Ativo", notas: 423 },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { useCompanies, useCreateCompany, useUpdateCompany, useDeleteCompany, useAccountants } from "@/hooks/useSupabaseData";
 
 const EmpresasPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const accountantId = user?.role === "contador" ? user.id_contador : undefined;
+
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState(initialEmpresas);
-  const [editItem, setEditItem] = useState<typeof initialEmpresas[0] | null>(null);
-  const [form, setForm] = useState({ xFant: "", cnpj: "", ie: "", uf: "", cidade: "" });
+  const [editItem, setEditItem] = useState<any>(null);
+  const [form, setForm] = useState({ razao_social: "", nome_fantasia: "", cnpj: "", ie: "", email: "", telefone: "", endereco: "", cidade: "", uf: "", accountant_id: "" });
 
-  const filtered = items.filter((e) => e.xFant.toLowerCase().includes(search.toLowerCase()) || e.cnpj.includes(search));
+  const { data: items, isLoading } = useCompanies(accountantId);
+  const { data: accountants } = useAccountants();
+  const createMut = useCreateCompany();
+  const updateMut = useUpdateCompany();
+  const deleteMut = useDeleteCompany();
 
-  const resetForm = () => setForm({ xFant: "", cnpj: "", ie: "", uf: "", cidade: "" });
+  const filtered = (items || []).filter((e: any) =>
+    (e.nome_fantasia || e.razao_social).toLowerCase().includes(search.toLowerCase()) || e.cnpj.includes(search)
+  );
 
-  const handleSave = () => {
-    if (!form.xFant.trim() || !form.cnpj.trim()) { toast.error("Preencha nome fantasia e CNPJ."); return; }
-    if (editItem) {
-      setItems((prev) => prev.map((e) => e.id === editItem.id ? { ...e, ...form } : e));
-      toast.success("Empresa atualizada!");
-    } else {
-      setItems((prev) => [...prev, { id: Date.now(), ...form, status: "Ativo", notas: 0 }]);
-      toast.success("Empresa cadastrada!");
+  const resetForm = () => setForm({ razao_social: "", nome_fantasia: "", cnpj: "", ie: "", email: "", telefone: "", endereco: "", cidade: "", uf: "", accountant_id: accountantId || "" });
+
+  const handleSave = async () => {
+    if (!form.razao_social.trim() || !form.cnpj.trim()) { toast.error("Preencha razão social e CNPJ."); return; }
+    if (!form.accountant_id && !accountantId) { toast.error("Selecione o contador."); return; }
+    try {
+      const payload = { ...form, accountant_id: form.accountant_id || accountantId! };
+      if (editItem) {
+        await updateMut.mutateAsync({ id: editItem.id, ...payload });
+        toast.success("Empresa atualizada!");
+      } else {
+        await createMut.mutateAsync(payload);
+        toast.success("Empresa cadastrada!");
+      }
+      setOpen(false); setEditItem(null); resetForm();
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao salvar.");
     }
-    setOpen(false); setEditItem(null); resetForm();
   };
 
-  const handleEdit = (item: typeof initialEmpresas[0]) => {
-    setEditItem(item); setForm({ xFant: item.xFant, cnpj: item.cnpj, ie: item.ie, uf: item.uf, cidade: item.cidade }); setOpen(true);
+  const handleEdit = (item: any) => {
+    setEditItem(item);
+    setForm({ razao_social: item.razao_social, nome_fantasia: item.nome_fantasia || "", cnpj: item.cnpj, ie: item.ie || "", email: item.email || "", telefone: item.telefone || "", endereco: item.endereco || "", cidade: item.cidade || "", uf: item.uf || "", accountant_id: item.accountant_id });
+    setOpen(true);
   };
 
-  const handleDelete = (id: number) => { setItems((prev) => prev.filter((e) => e.id !== id)); toast.success("Empresa excluída!"); };
+  const handleDelete = async (id: string) => {
+    try { await deleteMut.mutateAsync(id); toast.success("Empresa excluída!"); }
+    catch (err: any) { toast.error(err.message || "Erro ao excluir."); }
+  };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -59,15 +78,30 @@ const EmpresasPage = () => {
               <DialogDescription>Preencha os dados da empresa.</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-              <div className="sm:col-span-2 space-y-2"><Label>Nome Fantasia</Label><Input value={form.xFant} onChange={(e) => setForm({ ...form, xFant: e.target.value })} placeholder="Ex: Minha Empresa LTDA" /></div>
+              <div className="sm:col-span-2 space-y-2"><Label>Razão Social</Label><Input value={form.razao_social} onChange={(e) => setForm({ ...form, razao_social: e.target.value })} placeholder="Ex: Minha Empresa LTDA" /></div>
+              <div className="space-y-2"><Label>Nome Fantasia</Label><Input value={form.nome_fantasia} onChange={(e) => setForm({ ...form, nome_fantasia: e.target.value })} /></div>
               <div className="space-y-2"><Label>CNPJ</Label><Input value={form.cnpj} onChange={(e) => setForm({ ...form, cnpj: e.target.value })} placeholder="00.000.000/0001-00" /></div>
-              <div className="space-y-2"><Label>Inscrição Estadual</Label><Input value={form.ie} onChange={(e) => setForm({ ...form, ie: e.target.value })} placeholder="000000000" /></div>
-              <div className="space-y-2"><Label>UF</Label><Input value={form.uf} onChange={(e) => setForm({ ...form, uf: e.target.value })} placeholder="SP" maxLength={2} /></div>
-              <div className="space-y-2"><Label>Cidade</Label><Input value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} placeholder="São Paulo" /></div>
+              <div className="space-y-2"><Label>Inscrição Estadual</Label><Input value={form.ie} onChange={(e) => setForm({ ...form, ie: e.target.value })} /></div>
+              <div className="space-y-2"><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+              <div className="space-y-2"><Label>Telefone</Label><Input value={form.telefone} onChange={(e) => setForm({ ...form, telefone: e.target.value })} /></div>
+              <div className="space-y-2"><Label>Endereço</Label><Input value={form.endereco} onChange={(e) => setForm({ ...form, endereco: e.target.value })} /></div>
+              <div className="space-y-2"><Label>Cidade</Label><Input value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} /></div>
+              <div className="space-y-2"><Label>UF</Label><Input value={form.uf} onChange={(e) => setForm({ ...form, uf: e.target.value })} maxLength={2} /></div>
+              {isAdmin && (
+                <div className="space-y-2">
+                  <Label>Contador</Label>
+                  <select value={form.accountant_id} onChange={(e) => setForm({ ...form, accountant_id: e.target.value })} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm">
+                    <option value="">Selecione...</option>
+                    {(accountants || []).map((a: any) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="flex justify-end gap-3 mt-4">
               <Button variant="outline" onClick={() => { setOpen(false); setEditItem(null); resetForm(); }}>Cancelar</Button>
-              <Button variant="hero" onClick={handleSave}>{editItem ? "Atualizar" : "Salvar"}</Button>
+              <Button variant="hero" onClick={handleSave} disabled={createMut.isPending || updateMut.isPending}>
+                {(createMut.isPending || updateMut.isPending) ? "Salvando..." : editItem ? "Atualizar" : "Salvar"}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -75,9 +109,13 @@ const EmpresasPage = () => {
       <div className="relative max-w-sm"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" /><Input placeholder="Buscar por nome ou CNPJ..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" /></div>
       <DataTable
         columns={[
-          { key: "xFant", header: "Nome Fantasia", render: (r: any) => <div className="flex items-center gap-2"><Building2 size={16} className="text-primary" /><button onClick={() => navigate(`/dashboard/empresas/${r.id}`)} className="font-medium text-primary hover:underline cursor-pointer">{r.xFant}</button></div> },
-          { key: "cnpj", header: "CNPJ" }, { key: "ie", header: "IE" }, { key: "uf", header: "UF" }, { key: "cidade", header: "Cidade" }, { key: "notas", header: "Notas" },
-          { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "Ativo" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
+          { key: "nome_fantasia", header: "Nome", render: (r: any) => <div className="flex items-center gap-2"><Building2 size={16} className="text-primary" /><button onClick={() => navigate(`/dashboard/empresas/${r.id}`)} className="font-medium text-primary hover:underline cursor-pointer">{r.nome_fantasia || r.razao_social}</button></div> },
+          { key: "cnpj", header: "CNPJ" },
+          { key: "ie", header: "IE" },
+          { key: "uf", header: "UF" },
+          { key: "cidade", header: "Cidade" },
+          ...(isAdmin ? [{ key: "accountants", header: "Contador", render: (r: any) => r.accountants?.nome || "-" }] : []),
+          { key: "status", header: "Status", render: (r: any) => <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === "ativa" ? "bg-accent/10 text-accent" : "bg-destructive/10 text-destructive"}`}>{r.status}</span> },
           { key: "acoes", header: "Ações", render: (r: any) => (
             <div className="flex gap-1">
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(r)}><Pencil size={14} /></Button>
