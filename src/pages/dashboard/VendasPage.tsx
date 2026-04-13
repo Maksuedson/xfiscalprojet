@@ -363,6 +363,14 @@ const VendasPage = () => {
                       Finalizar
                     </Button>
                   )}
+                  {sale.status === "finalizada" && (
+                    <Button size="sm" variant="default" onClick={() => {
+                      updateStatus.mutate({ id: sale.id, status: "faturada" });
+                      toast.info("Venda faturada! Navegue até Notas Fiscais > NF-e Saída para emitir.");
+                    }}>
+                      Emitir NF-e
+                    </Button>
+                  )}
                   {sale.status === "rascunho" && (
                     <Button size="sm" variant="destructive" onClick={() => updateStatus.mutate({ id: sale.id, status: "cancelada" })}>
                       Cancelar
